@@ -4,6 +4,9 @@ from rest_framework import status, permissions
 from .models import Task
 from .serializers import TaskSerializer
 from django.shortcuts import get_object_or_404
+from .permissions import IsItStuff  # Assuming you have a custom permission class for IT staff
+
+
 
 class TaskCreateView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -59,3 +62,15 @@ class TaskDetailView(APIView):
         task = get_object_or_404(Task, pk=pk)
         serializer = TaskSerializer(task)
         return Response(serializer.data)
+
+
+class TaskUpdateStatusView(APIView):
+    permission_classes = [IsItStuff]  # Custom permission for IT staff
+    
+    def put(self, request, pk):
+        task = get_object_or_404(Task, pk=pk)
+        serializer = TaskSerializer(task, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()  # updates existing task
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
