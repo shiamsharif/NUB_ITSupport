@@ -77,7 +77,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return user
         
 
-class  (serializers.ModelSerializer):
+class SignUpRequestSerializer (serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = [

@@ -11,7 +11,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework import status
 from .serializers import PasswordResetRequestSerializer, PasswordResetRequestSerializer, SendOTPSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from Account.utils import send_otp_on_mail
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
@@ -58,7 +58,9 @@ class EmailVerifyView(APIView):
         
         
 class LoginView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
+        print("Login request received")
         email = request.data.get("email")
         password = request.data.get("password")
         
