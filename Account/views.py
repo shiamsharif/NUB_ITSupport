@@ -60,9 +60,14 @@ class EmailVerifyView(APIView):
 class LoginView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
-        print("Login request received")
+
         email = request.data.get("email")
         password = request.data.get("password")
+        
+
+        # Check if user is active
+        if not user.is_active:
+            return Response({"error": "User account is inactive"}, status=status.HTTP_403_FORBIDDEN)
         
         if not email or not password:
             return Response({"error": "Email and password are required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -78,12 +83,13 @@ class LoginView(APIView):
 
         # check password
         
-
+        # Authenticate the user
         user = authenticate(request, email=email, password=password)
 
         if user is None:
             return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
+        # Generate JWT tokens
         refresh = RefreshToken.for_user(user)
 
         return Response({
