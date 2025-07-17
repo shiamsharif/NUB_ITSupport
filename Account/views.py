@@ -20,6 +20,7 @@ User = get_user_model()
 
 
 class UniversityEmailSignupView(APIView):
+    permission_classes = [AllowAny]
     serializer_class = CustomUserSerializer
 
     def post(self, request):
@@ -30,6 +31,7 @@ class UniversityEmailSignupView(APIView):
         return Response(serializer.errors, status=400)
     
 class GeneralSignupView(APIView): 
+    permission_classes = [AllowAny]
     serializer_class = SignUpRequestSerializer
     
     def post(self, request):
