@@ -1,3 +1,4 @@
+{% comment %} --------------------FOR production:---------------------
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +11,7 @@
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
           <tr>
-            <td style="background-color: #3d34e4ff; padding: 20px; text-align: center;">
+            <td style="background-color: #2518bcff; padding: 20px; text-align: center;">
               <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Welcome to {{ project_name|default:"Our Platform" }}</h1>
             </td>
           </tr>
@@ -21,7 +22,7 @@
                 Thank you for registering! Please confirm your email address by clicking the button below.
               </p>
               <p style="text-align: center; margin: 30px 0;">
-                <a href="{{ verify_url }}" style="background-color: #3d34e4ff; color: white; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 4px; display: inline-block;">
+                <a href="{{ verify_url }}" style="background-color: #2518bcff; color: white; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 4px; display: inline-block;">
                   Verify Email
                 </a>
               </p>
@@ -38,3 +39,58 @@
   </table>
 </body>
 </html>
+ {% endcomment %}
+
+
+
+ 
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Verify Your Email</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f7f7f7;">
+  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="padding: 20px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+          <tr>
+            <td style="background-color: #4CAF50; padding: 20px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Welcome to {{ project_name|default:"Our Platform" }}</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 30px;">
+              <p style="font-size: 16px; color: #333333;">Hi <strong>{{ user.first_name }}</strong>,</p>
+              <p style="font-size: 16px; color: #333333;">
+                Thank you for registering! Please confirm your email address by clicking the button below.
+              </p>
+              <p style="text-align: center; margin: 30px 0;">
+                <a href="{{ verify_url }}" style="background-color: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 4px; display: inline-block;">
+                  Verify Email
+                </a>
+              </p>
+              <p style="font-size: 14px; color: #666666;">
+                If the button above doesn't work, copy and paste this URL into your browser:
+              </p>
+              <p style="font-size: 14px; color: #666666; word-break: break-all;">
+                <a href="{{ verify_url }}" style="color: #4CAF50;">{{ verify_url }}</a>
+              </p>
+              <p style="font-size: 14px; color: #999999; margin-top: 40px;">
+                If you didn’t sign up, you can safely ignore this email.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f1f1f1; text-align: center; padding: 15px; font-size: 12px; color: #888888;">
+              &copy; {{ current_year|default:"2025" }} {{ project_name|default:"Our Platform" }}. All rights reserved.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html> 

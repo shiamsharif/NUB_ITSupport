@@ -56,6 +56,11 @@ class EmailVerifyView(APIView):
 
             if default_token_generator.check_token(user, token):
                 user.is_varified = True
+                if not user.email.lower().endswith('@nub.ac.bd'):
+                    user.is_active = False  # Deactivate user if email is not from NUB
+                else:
+                    user.is_active = True
+                
                 user.save()
                 email_varification_token.delete()
                 return Response({'message': 'Email successfully verified.'}, status=status.HTTP_200_OK)
