@@ -24,8 +24,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
             'phone_number',
             'university_id',
             'applied_for',
-            'user_type',
-            'is_varified'
+            #'user_type',
+            #'is_varified'
         ]
         extra_kwargs = {
             'password': {'write_only': True}
@@ -45,7 +45,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         Student emails typically contain a numeric ID.
         
         Student example: sharif_41220100032@nub.ac.bd
-        Teacher example: shaim@nub.ac.bd
+        Teacher example: shiam@nub.ac.bd
         """
         # Regex to check for a sequence of 10+ digits in the local part of the email
         match = re.search(r'\d{6,}', email.split('@')[0])
@@ -89,8 +89,8 @@ class SignUpRequestSerializer (serializers.ModelSerializer):
             'phone_number',
             'university_id',
             'applied_for',
-            'user_type',
-            'is_varified'
+            #'user_type',
+            #'is_varified'
         ]
         extra_kwargs = {
             'password': {'write_only': True}

@@ -1,6 +1,7 @@
 
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from datetime import timedelta
 
 
 USER_TYPE = {
@@ -64,3 +65,25 @@ class CustomUser(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return self.is_superuser
 
+
+
+# Email Verification Token Model
+class EmailVerificationToken(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+   #verification_link = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    token = models.CharField(max_length=100, unique=True)
+    is_used = models.BooleanField(default=False)
+    expired_at = models.DateTimeField(blank=True, null=True)
+    
+    def seve(self, *args, **kwargs):
+        if not self.expired_at:
+            self.expired_at = self.created_at + timedelta(minutes=10)  
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Verification Token for {self.user.email} - {self.token}"
+
+    class Meta:
+        verbose_name = 'Email Verification Token'
+        verbose_name_plural = 'Email Verification Tokens'

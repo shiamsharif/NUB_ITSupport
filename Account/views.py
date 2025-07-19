@@ -14,7 +14,8 @@ from .serializers import PasswordResetRequestSerializer, PasswordResetRequestSer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from Account.utils import send_otp_on_mail
 from django.utils import timezone
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404 
+from .models import EmailVerificationToken
     
 User = get_user_model()
 
@@ -43,14 +44,20 @@ class GeneralSignupView(APIView):
 
 
 class EmailVerifyView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, uidb64, token):
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
             user = User.objects.get(pk=uid)
+            
+            email_varification_token = EmailVerificationToken.objects.filter(user=user, token=token).first()
+            if not email_varification_token:
+                return Response({'error': 'Invalid verification token'}, status=status.HTTP_400_BAD_REQUEST)
 
             if default_token_generator.check_token(user, token):
                 user.is_varified = True
                 user.save()
+                email_varification_token.delete()
                 return Response({'message': 'Email successfully verified.'}, status=status.HTTP_200_OK)
             else:
                 return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)

@@ -7,23 +7,47 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth import get_user_model
 from Main import settings
+from .models import EmailVerificationToken
+
+
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+
 
 User = get_user_model()
 
 def send_verification_email(user, request):
     token = default_token_generator.make_token(user)
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))  # safely encode user ID
+    
+    EmailVerificationToken.objects.create(
+        user=user,
+        token=token,
+    )
 
     verify_url = request.build_absolute_uri(
         reverse('verify-email', kwargs={'uidb64': uidb64, 'token': token})
     )
-
-    subject = 'Verify your email'
-    message = f'Click the link to verify your account: {verify_url}'
-
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
     
-    
+    subject = 'Verify your email address'
+    from_email = settings.DEFAULT_FROM_EMAIL
+    recipient_list = [user.email]
+
+    # Render HTML email
+    html_message = render_to_string('emails/verify_email.html', {
+        
+        'verify_url': verify_url,
+    })
+
+    # Fallback plain text
+    plain_message = f'Hi {user.first_name}, please click the link to verify your email: {verify_url}'
+
+    email = EmailMultiAlternatives(subject, plain_message, from_email, recipient_list)
+    email.attach_alternative(html_message, "text/html")
+    email.send()
+
+
+
     
 def send_otp_on_mail(email):
     user = User.objects.get(email=email)
