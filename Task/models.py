@@ -4,6 +4,7 @@ from Account.models import CustomUser
 
 class Task(models.Model):
     ISSUE_CHOICES = [
+        ('none', 'None'),
         ('software', 'Software Issues'),
         ('hardware', 'Hardware Issues'),
     ]
@@ -35,4 +36,4 @@ class Task(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.user.email} - {self.issues_type}"
+        return f"Task({self.room_number}) - {self.issues_type} - {self.status}"
