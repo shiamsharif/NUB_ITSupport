@@ -11,16 +11,17 @@ This project is a Django REST API that can be run using [uv](https://www.uvicorn
 
 ## 🚀 Prerequisites
 
-- Python 3.8 or higher
+- Python 3.10 or higher
 - Git
 - pip (Python package manager)
 - Virtualenv (recommended)
 
 ---
 
-## 📦 Step 1: Install uv
-
 You can install `uv` globally or in your virtual environment:
+
+
+## 📦 Step 1: Install uv
 
 ```bash
 pip install uv
@@ -31,25 +32,15 @@ pip install uv
 ## 📁 Step 2: Clone This Repository
 
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/shiamsharif/NUB_ITSupport/
+cd NUB_ITSupport
 ```
 
-> Replace `your-username/your-repo-name` with the actual repo URL.
+
 
 ---
 
 ## ⚙️ Step 3: Set Up and Run the Django Project
-
-```bash
-# Optional but recommended
-python -m venv env
-source env/bin/activate  # On Windows: env\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
 If `uv` is already installed, you can run the following:
 
 ```bash
