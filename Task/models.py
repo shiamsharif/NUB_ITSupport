@@ -22,7 +22,7 @@ class Task(models.Model):
     monitor_id = models.CharField(max_length=100, blank=True, null=True)
     ups_id = models.CharField(max_length=100, blank=True, null=True)
 
-    issues = models.CharField(max_length=100, blank=True, null=True)
+    task_name = models.CharField(max_length=100, blank=True, null=True)
     issues_type = models.CharField(max_length=10, choices=ISSUE_CHOICES, default='None')
     description = models.TextField()
 
