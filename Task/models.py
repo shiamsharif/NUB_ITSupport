@@ -37,3 +37,28 @@ class Task(models.Model):
 
     def __str__(self):
         return f"Task({self.room_number}) - {self.issues_type} - {self.status}"
+    
+    
+class Comment(models.Model):
+    task = models.ForeignKey(
+        Task,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+    username = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='username'
+    )
+    body = models.TextField()
+    
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    
+    
+    class Meta:
+        ordering = ['-created']
+        
+        
+    def __str__(self):
+        return f'Comment by {self.name} on {self.post}'
