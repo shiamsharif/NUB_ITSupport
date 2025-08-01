@@ -1,8 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from .models import Task
-from .serializers import TaskSerializer
+from .models import Task, Comment
+from .serializers import TaskSerializer, CommentSerializer
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, Q
 from rest_framework import generics
@@ -65,6 +65,58 @@ class TaskDetailView(APIView):
         task = get_object_or_404(Task, pk=pk)
         serializer = TaskSerializer(task)
         return Response(serializer.data)
+    
+    # comment section for each post
+    def post(self, request, pk):
+        task = get_object_or_404(Task, pk=pk)
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(task=task, username=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CommentDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, pk, user):
+        comment = get_object_or_404(Comment, pk=pk)
+        if comment.username != user:
+            raise PermissionError("You do not have permission to modify this comment.")
+        return comment
+
+    def put(self, request, pk):
+        try:
+            comment = self.get_object(pk, request.user)
+        except PermissionError as e:
+            return Response({'detail': str(e)}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = CommentSerializer(comment, data=request.data)
+        if serializer.is_valid():
+            serializer.save()  # user and task don't change
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk):
+        try:
+            comment = self.get_object(pk, request.user)
+        except PermissionError as e:
+            return Response({'detail': str(e)}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = CommentSerializer(comment, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        try:
+            comment = self.get_object(pk, request.user)
+        except PermissionError as e:
+            return Response({'detail': str(e)}, status=status.HTTP_403_FORBIDDEN)
+
+        comment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 class TaskUpdateStatusView(APIView):
