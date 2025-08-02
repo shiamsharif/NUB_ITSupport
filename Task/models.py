@@ -48,7 +48,7 @@ class Comment(models.Model):
     username = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
-        related_name='username'
+        related_name='comments'
     )
     body = models.TextField()
     
