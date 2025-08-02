@@ -19,8 +19,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
             'id',
             'email',
             'password',
-            'first_name',
-            'last_name',
+            'username',
             'phone_number',
             'university_id',
             'applied_for',
@@ -57,14 +56,14 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         request = self.context.get('request')  # needed to build absolute URI
+        
         email = validated_data['email']
         user_type = self.detect_user_type_from_email(email)
         password = validated_data.pop('password')  # extract password safely
 
         user = CustomUser(
             email=email,
-            first_name=validated_data.get('first_name', ''),
-            last_name=validated_data.get('last_name', ''),
+            username = validated_data.get('username', ''),
             phone_number=validated_data.get('phone_number', ''),
             university_id=validated_data.get('university_id'),
             applied_for=validated_data.get('applied_for', ''),
@@ -84,8 +83,7 @@ class SignUpRequestSerializer (serializers.ModelSerializer):
             'id',
             'email',
             'password',
-            'first_name',
-            'last_name',
+            'username',
             'phone_number',
             'university_id',
             'applied_for',
@@ -104,8 +102,7 @@ class SignUpRequestSerializer (serializers.ModelSerializer):
 
         user = CustomUser(
             email=email,
-            first_name=validated_data.get('first_name', ''),
-            last_name=validated_data.get('last_name', ''),
+            username = validated_data.get('username', ''),
             phone_number=validated_data.get('phone_number', ''),
             university_id=validated_data.get('university_id'),
             applied_for=validated_data.get('applied_for', ''),
