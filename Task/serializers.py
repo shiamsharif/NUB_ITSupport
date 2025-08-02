@@ -19,7 +19,7 @@
         
         
 from rest_framework import serializers
-from .models import Task, Comment
+from .models import Task, Comment, ContactMessage
 
 # CommentSerializer must come FIRST
 class CommentSerializer(serializers.ModelSerializer):
@@ -36,3 +36,9 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = '__all__'
         read_only_fields = ['user', 'created_at', 'updated_at']
+
+
+class ContactMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactMessage
+        fields = ['name', 'email', 'phone', 'body']

@@ -8,6 +8,7 @@ from .views import (
     TaskDetailView,
     TaskUpdateStatusView,
     CommentDetailView,
+    ContactUsView,
 )
 
 urlpatterns = [
@@ -19,4 +20,9 @@ urlpatterns = [
     path('resolve/<int:pk>/', TaskUpdateStatusView.as_view(), name='task-resolve'),
     
     path('comments/<int:pk>/', CommentDetailView.as_view(), name='comment-detail'),
+    
+    path('contact-us/', ContactUsView.as_view(), name='contact-us'),
 ]
+
+
+

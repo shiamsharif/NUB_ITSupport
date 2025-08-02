@@ -2,12 +2,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from .models import Task, Comment
-from .serializers import TaskSerializer, CommentSerializer
+from .serializers import TaskSerializer, CommentSerializer, ContactMessageSerializer
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, Q
 from rest_framework import generics
 from .permissions import IsItStuff  # Assuming you have a custom permission class for IT staff
 from rest_framework.filters import SearchFilter
+from django.core.mail import send_mail
+from rest_framework import status
+from Main import settings
 
 
 
@@ -188,5 +191,40 @@ class TaskDashboardView(generics.ListAPIView):
     
     
 
-   
-   
+class ContactUsView(APIView):
+    permission_classes = []  # Allow unauthenticated users
+
+    # List of receivers you can update in future
+    RECEIVER_EMAILS = ['shiam.sharif.07@gmail.com', 'sharif_41220100032@nub.ac.bd']
+
+    def post(self, request):
+        serializer = ContactMessageSerializer(data=request.data)
+        if serializer.is_valid():
+            # save to database 
+            serializer.save()
+
+            name = serializer.validated_data['name']
+            email = serializer.validated_data['email']
+            phone = serializer.validated_data['phone']
+            body = serializer.validated_data['body']
+
+            subject = f"New Contact Message from {name}"
+            message = f"""
+            Name: {name}
+            Email: {email}
+            Phone: {phone}
+            
+            Message:
+            {body}
+            """
+
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,  # from email
+                self.RECEIVER_EMAILS,  # to emails
+                fail_silently=False,
+            )
+
+            return Response({"message": "Your message has been sent successfully!"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
