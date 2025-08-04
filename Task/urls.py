@@ -7,8 +7,10 @@ from .views import (
     TaskDeleteView,
     TaskDetailView,
     TaskUpdateStatusView,
-    CommentDetailView,
+    TaskCommentsListView,
     ContactUsView,
+    CommentViewSet,
+    
 )
 
 urlpatterns = [
@@ -19,7 +21,10 @@ urlpatterns = [
     path('details/<int:pk>/', TaskDetailView.as_view(), name='task-detail'),
     path('resolve/<int:pk>/', TaskUpdateStatusView.as_view(), name='task-resolve'),
     
-    path('comments/<int:pk>/', CommentDetailView.as_view(), name='comment-detail'),
+    path('tasks/<int:task_id>/comments/', TaskCommentsListView.as_view(), name='task-comments-list'),
+    path('comments/<int:pk>/', CommentViewSet.as_view(), name='comment-detail'),  # GET, PUT, PATCH, DELETE
+    path('tasks/<int:task_id>/comments/new/', CommentViewSet.as_view(), name='comment-create'),  # POST
+    
     
     path('contact-us/', ContactUsView.as_view(), name='contact-us'),
 ]

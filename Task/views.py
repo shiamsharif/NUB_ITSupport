@@ -69,16 +69,23 @@ class TaskDetailView(APIView):
         serializer = TaskSerializer(task)
         return Response(serializer.data)
     
-    # comment section for each post
-    def post(self, request, pk):
-        task = get_object_or_404(Task, pk=pk)
-        serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(task=task, username=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class CommentDetailView(APIView):
+    
+class TaskCommentsListView(APIView):
+    """
+    GET: List all comments for a specific Task by task_id.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, task_id):
+        comments = Comment.objects.filter(task_id=task_id)
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class CommentViewSet(APIView):
+    """
+    Handles CRUD operations for individual comments.
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self, pk, user):
@@ -87,7 +94,29 @@ class CommentDetailView(APIView):
             raise PermissionError("You do not have permission to modify this comment.")
         return comment
 
+    def get(self, request, pk):
+        """
+        GET: Retrieve a specific comment by pk.
+        """
+        comment = get_object_or_404(Comment, pk=pk)
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, task_id):
+        """
+        POST: Create a new comment on a specific task.
+        """
+        task = get_object_or_404(Task, pk=task_id)
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(task=task, username=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def put(self, request, pk):
+        """
+        PUT: Fully update a specific comment (only owner can update).
+        """
         try:
             comment = self.get_object(pk, request.user)
         except PermissionError as e:
@@ -95,11 +124,14 @@ class CommentDetailView(APIView):
 
         serializer = CommentSerializer(comment, data=request.data)
         if serializer.is_valid():
-            serializer.save()  # user and task don't change
-            return Response(serializer.data)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, pk):
+        """
+        PATCH: Partially update a specific comment (only owner can update).
+        """
         try:
             comment = self.get_object(pk, request.user)
         except PermissionError as e:
@@ -108,10 +140,13 @@ class CommentDetailView(APIView):
         serializer = CommentSerializer(comment, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
+        """
+        DELETE: Delete a specific comment (only owner can delete).
+        """
         try:
             comment = self.get_object(pk, request.user)
         except PermissionError as e:
@@ -119,7 +154,6 @@ class CommentDetailView(APIView):
 
         comment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 
 class TaskUpdateStatusView(APIView):
