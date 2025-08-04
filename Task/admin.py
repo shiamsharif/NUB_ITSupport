@@ -1,12 +1,20 @@
 from django.contrib import admin
 from .models import Task, Comment, ContactMessage
 
+
+class CommentInline(admin.TabularInline):
+    model = Comment
+    extra = 0  # Don't show empty forms
+    readonly_fields = ['username', 'body', 'created', 'updated']
+    can_delete = False  # Optional: prevent delete from inline
+
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
     list_display = ['id', 'user__username', 'room_number', 'issues_type', 'status', 'created_at']
     list_filter = ['status', 'issues_type', 'created_at']
     search_fields = ['user__email', 'room_number', 'description']
     ordering = ['-created_at']
+    inlines = [CommentInline] 
     
     
 @admin.register(Comment)
