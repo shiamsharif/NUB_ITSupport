@@ -71,32 +71,67 @@ class EmailVerifyView(APIView):
             return Response({'error': 'Invalid UID'}, status=status.HTTP_400_BAD_REQUEST)
         
         
+# class LoginView(APIView):
+#     permission_classes = [AllowAny]
+#     def post(self, request):
+
+#         email = request.data.get("email")
+#         password = request.data.get("password")
+        
+
+#         # Check if user is active
+#         if not user.is_active:
+#             return Response({"error": "User account is inactive"}, status=status.HTTP_403_FORBIDDEN)
+        
+#         if not email or not password:
+#             return Response({"error": "Email and password are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        
+#         if not User.objects.filter(email=email).exists():
+#             return Response({"error": "User does not exist"}, status=status.HTTP_404_NOT_FOUND)
+#         user = User.objects.get(email=email)
+        
+#         # check if user is verified
+#         if not user.is_varified:
+#             return Response({"error": "Email is not verified"}, status=status.HTTP_403_FORBIDDEN)
+
+#         # check password
+        
+#         # Authenticate the user
+#         user = authenticate(request, email=email, password=password)
+
+#         if user is None:
+#             return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+#         # Generate JWT tokens
+#         refresh = RefreshToken.for_user(user)
+
+#         return Response({
+#             "refresh": str(refresh),
+#             "access": str(refresh.access_token),
+#         })
+
 class LoginView(APIView):
     permission_classes = [AllowAny]
-    def post(self, request):
 
+    def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
-        
 
-        # Check if user is active
-        if not user.is_active:
-            return Response({"error": "User account is inactive"}, status=status.HTTP_403_FORBIDDEN)
-        
         if not email or not password:
             return Response({"error": "Email and password are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        
         if not User.objects.filter(email=email).exists():
             return Response({"error": "User does not exist"}, status=status.HTTP_404_NOT_FOUND)
+
         user = User.objects.get(email=email)
-        
-        # check if user is verified
+
+        if not user.is_active:
+            return Response({"error": "User account is inactive"}, status=status.HTTP_403_FORBIDDEN)
+
         if not user.is_varified:
             return Response({"error": "Email is not verified"}, status=status.HTTP_403_FORBIDDEN)
 
-        # check password
-        
         # Authenticate the user
         user = authenticate(request, email=email, password=password)
 
@@ -110,6 +145,7 @@ class LoginView(APIView):
             "refresh": str(refresh),
             "access": str(refresh.access_token),
         })
+
         
         
 class PasswordResetView(APIView):

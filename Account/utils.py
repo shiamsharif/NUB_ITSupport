@@ -40,7 +40,7 @@ def send_verification_email(user, request):
     })
 
     # Fallback plain text
-    plain_message = f'Hi {user.first_name}, please click the link to verify your email: {verify_url}'
+    plain_message = f'Hi {user.username}, please click the link to verify your email: {verify_url}'
 
     email = EmailMultiAlternatives(subject, plain_message, from_email, recipient_list)
     email.attach_alternative(html_message, "text/html")

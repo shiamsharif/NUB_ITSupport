@@ -232,6 +232,7 @@ class ContactUsView(APIView):
     RECEIVER_EMAILS = ['shiam.sharif.07@gmail.com', 'sharif_41220100032@nub.ac.bd']
 
     def post(self, request):
+        print("++++++++++++++++++++++++++++++++++++++++++++++")
         serializer = ContactMessageSerializer(data=request.data)
         if serializer.is_valid():
             # save to database 
