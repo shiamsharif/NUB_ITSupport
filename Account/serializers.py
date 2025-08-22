@@ -52,7 +52,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         if match:
             return "Student"
         else:
-            return "Stuff"
+            return "Staff"
 
     def create(self, validated_data):
         request = self.context.get('request')  # needed to build absolute URI
