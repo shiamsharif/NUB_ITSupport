@@ -5,7 +5,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from Account.serializers import CustomUserSerializer, SignUpRequestSerializer
+from Account.serializers import CustomUserSerializer, SignUpRequestSerializer, ProfileSerializer
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
@@ -16,6 +16,8 @@ from Account.utils import send_otp_on_mail
 from django.utils import timezone
 from django.shortcuts import get_object_or_404 
 from .models import EmailVerificationToken
+
+from rest_framework.generics import RetrieveUpdateAPIView
     
 User = get_user_model()
 
@@ -175,6 +177,8 @@ class PasswordResetView(APIView):
 
 
 class SendOTP(APIView):
+    permission_classes = [AllowAny]
+    
     def post(self, request):
         serializer = SendOTPSerializer(data=request.data)
         if serializer.is_valid():
@@ -193,6 +197,8 @@ class SendOTP(APIView):
     
     
 class ForgetPasswordView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         email = request.data.get('email')
         otp = request.data.get('otp')
@@ -226,4 +232,14 @@ class ForgetPasswordView(APIView):
 
 
 
-    
+class ProfileView(RetrieveUpdateAPIView):
+    """
+    GET  /api/me/profile/   -> view profile
+    PATCH/PUT /api/me/profile/ -> update username, phone_number, university_id
+    """
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        # always operate on the authenticated user
+        return self.request.user

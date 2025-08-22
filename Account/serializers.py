@@ -122,3 +122,22 @@ class PasswordResetRequestSerializer(serializers.Serializer):
     
 class SendOTPSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(read_only=True)
+    user_type = serializers.CharField(read_only=True)
+    is_varified = serializers.BooleanField(read_only=True)  # model field name as given
+
+    class Meta:
+        model = CustomUser
+        fields = [
+            "id",
+            "email",           # read-only
+            "username",        # editable
+            "phone_number",    # editable
+            "university_id",   # editable
+            "user_type",       # read-only
+            "is_varified",     # read-only
+        ]
+        read_only_fields = ("id", "email", "user_type", "is_varified")

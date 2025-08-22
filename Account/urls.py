@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UniversityEmailSignupView, GeneralSignupView, EmailVerifyView, LoginView, PasswordResetView, SendOTP, ForgetPasswordView
+from .views import UniversityEmailSignupView, GeneralSignupView, EmailVerifyView, LoginView, PasswordResetView, SendOTP, ForgetPasswordView, ProfileView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
@@ -16,6 +16,9 @@ urlpatterns = [
     # Forget password
     path('send-otp/', SendOTP.as_view(), name='send_otp'),
     path('forgot-password/', ForgetPasswordView.as_view(), name='forget_password'),
+    
+    #Profile:
+    path("me/profile/", ProfileView.as_view(), name="profile"),
 
 
 ]
