@@ -9,6 +9,7 @@ django-environ = "*"
 drf-spectacular = "*"
 djangorestframework-simplejwt = "*"
 markdown = "*"
+django-filter = "*"
 
 [dev-packages]
 

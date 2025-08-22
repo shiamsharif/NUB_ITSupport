@@ -23,7 +23,7 @@ class Task(models.Model):
     ups_id = models.CharField(max_length=100, blank=True, null=True)
 
     task_name = models.CharField(max_length=100, blank=True, null=True)
-    issues_type = models.CharField(max_length=10, choices=ISSUE_CHOICES, default='None')
+    issues_type = models.CharField(max_length=10, choices=ISSUE_CHOICES, default='none')
     description = models.TextField()
 
     status = models.CharField(

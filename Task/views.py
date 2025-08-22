@@ -11,6 +11,9 @@ from rest_framework.filters import SearchFilter
 from django.core.mail import send_mail
 from rest_framework import status
 from Main import settings
+# views.py
+from rest_framework.generics import ListAPIView
+
 
 
 
@@ -40,14 +43,60 @@ class TaskUpdateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class TaskListView(APIView):
+# class TaskListView(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def get(self, request):
+#         tasks = Task.objects.all()
+#         serializer = TaskSerializer(tasks, many=True)
+#         return Response(serializer.data)
+
+
+class DashboardTaskListView(ListAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+    permission_classes = [IsItStuff]
+
+    # exact filters (?status=pending&issues_type=software&user=42)
+    filterset_fields = ["status", "issues_type", "user"]
+
+    # fuzzy search (?search=room-301 or ?search=savrin)
+    search_fields = [
+        "room_number", "task_name", "issues_type", "description",
+        "user__username", "user__email",
+    ]
+
+    # ordering (?ordering=created_at or ?ordering=-updated_at)
+    ordering_fields = ["created_at", "updated_at", "room_number", "task_name"]
+    ordering = ["-created_at"]
+
+
+class TaskListView(ListAPIView):
+    """
+    Logged-in user → only their own tasks.
+    Supports filter (status, issues_type), search, ordering, pagination (if enabled).
+    """
+    serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
-        tasks = Task.objects.all()
-        serializer = TaskSerializer(tasks, many=True)
-        return Response(serializer.data)
+    # exact filters 
+    filterset_fields = ["status", "issues_type"]
 
+    # fuzzy search
+    search_fields = [
+        "room_number", "task_name", "issues_type",
+        "description",
+    ]
+
+    # ordering
+    ordering_fields = ["created_at", "updated_at", "room_number", "task_name"]
+    ordering = ["-created_at"]
+
+    def get_queryset(self):
+        return (
+            Task.objects.select_related("user")
+            .filter(user=self.request.user)
+        )
 
 class TaskDeleteView(APIView):
     permission_classes = [permissions.IsAuthenticated]
