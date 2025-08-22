@@ -15,7 +15,7 @@ urlpatterns = [
     path('password-reset/', PasswordResetView.as_view(), name='password_reset'),
     # Forget password
     path('send-otp/', SendOTP.as_view(), name='send_otp'),
-    path('forget-password/', ForgetPasswordView.as_view(), name='forget_password'),
+    path('forgot-password/', ForgetPasswordView.as_view(), name='forget_password'),
 
 
 ]
