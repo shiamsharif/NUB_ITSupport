@@ -107,7 +107,7 @@ class TaskDeleteView(APIView):
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
 
         task.delete()
-        return Response({'message': 'Task deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'message': 'Task deleted successfully'}, status=status.HTTP_200_OK)
 
 
 class TaskDetailView(APIView):
@@ -202,7 +202,7 @@ class CommentViewSet(APIView):
             return Response({'detail': str(e)}, status=status.HTTP_403_FORBIDDEN)
 
         comment.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_200_OK)
 
 
 class TaskUpdateStatusView(APIView):
