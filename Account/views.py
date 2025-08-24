@@ -10,15 +10,20 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from rest_framework import status
-from .serializers import PasswordResetRequestSerializer, PasswordResetRequestSerializer, SendOTPSerializer
+from .serializers import PasswordResetRequestSerializer, PasswordResetRequestSerializer, SendOTPSerializer, ItStaffCreateSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from Account.utils import send_otp_on_mail
 from django.utils import timezone
 from django.shortcuts import get_object_or_404 
 from .models import EmailVerificationToken
 
-from rest_framework.generics import RetrieveUpdateAPIView
-    
+from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView
+
+from .permissions import IsItStaffOrSuperuser
+
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+
 User = get_user_model()
 
 
@@ -73,45 +78,6 @@ class EmailVerifyView(APIView):
             return Response({'error': 'Invalid UID'}, status=status.HTTP_400_BAD_REQUEST)
         
         
-# class LoginView(APIView):
-#     permission_classes = [AllowAny]
-#     def post(self, request):
-
-#         email = request.data.get("email")
-#         password = request.data.get("password")
-        
-
-#         # Check if user is active
-#         if not user.is_active:
-#             return Response({"error": "User account is inactive"}, status=status.HTTP_403_FORBIDDEN)
-        
-#         if not email or not password:
-#             return Response({"error": "Email and password are required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        
-#         if not User.objects.filter(email=email).exists():
-#             return Response({"error": "User does not exist"}, status=status.HTTP_404_NOT_FOUND)
-#         user = User.objects.get(email=email)
-        
-#         # check if user is verified
-#         if not user.is_varified:
-#             return Response({"error": "Email is not verified"}, status=status.HTTP_403_FORBIDDEN)
-
-#         # check password
-        
-#         # Authenticate the user
-#         user = authenticate(request, email=email, password=password)
-
-#         if user is None:
-#             return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-
-#         # Generate JWT tokens
-#         refresh = RefreshToken.for_user(user)
-
-#         return Response({
-#             "refresh": str(refresh),
-#             "access": str(refresh.access_token),
-#         })
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
@@ -233,13 +199,18 @@ class ForgetPasswordView(APIView):
 
 
 class ProfileView(RetrieveUpdateAPIView):
-    """
-    GET  /api/me/profile/   -> view profile
-    PATCH/PUT /api/me/profile/ -> update username, phone_number, university_id
-    """
+
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def get_object(self):
         # always operate on the authenticated user
         return self.request.user
+    
+    
+class ItStaffCreateView(CreateAPIView):
+    
+    serializer_class = ItStaffCreateSerializer
+    permission_classes = [IsAuthenticated, IsItStaffOrSuperuser]
+    queryset = User.objects.all()

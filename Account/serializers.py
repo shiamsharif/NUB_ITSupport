@@ -141,3 +141,40 @@ class ProfileSerializer(serializers.ModelSerializer):
             "is_varified",     # read-only
         ]
         read_only_fields = ("id", "email", "user_type", "is_varified")
+        
+        
+class ItStaffCreateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, min_length=8)
+
+    class Meta:
+        model = User
+        # Only allow fields you want creators to set; force the role in create()
+        fields = ["id", "email", "username", "phone_number", "password"]
+        read_only_fields = ["id"]
+
+    def validate_email(self, value):
+        email = (value or "").strip().lower()
+        if not email:
+            raise serializers.ValidationError("Email is required.")
+        if User.objects.filter(email__iexact=email).exists():
+            raise serializers.ValidationError("A user with this email already exists.")
+        return email
+
+    def create(self, validated_data):
+        email = validated_data.pop("email").lower()
+        password = validated_data.pop("password")
+
+        user = User(
+            email=email,
+            **validated_data,
+        )
+        # Enforce role/flags
+        user.user_type = "ItStaff"
+        user.is_staff = True
+        user.is_superuser = False
+        # Optional: mark verified on creation (change if you prefer otherwise)
+        user.is_varified = True
+
+        user.set_password(password)
+        user.save()
+        return user

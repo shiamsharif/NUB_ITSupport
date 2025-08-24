@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UniversityEmailSignupView, GeneralSignupView, EmailVerifyView, LoginView, PasswordResetView, SendOTP, ForgetPasswordView, ProfileView
+from .views import UniversityEmailSignupView, GeneralSignupView, EmailVerifyView, LoginView, PasswordResetView, SendOTP, ForgetPasswordView, ProfileView, ItStaffCreateView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
@@ -19,6 +19,9 @@ urlpatterns = [
     
     #Profile:
     path("me/profile/", ProfileView.as_view(), name="profile"),
+    
+    #Create ITStaff
+    path("itstaff/", ItStaffCreateView.as_view(), name="itstaff-create"),
 
 
 ]

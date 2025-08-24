@@ -85,7 +85,7 @@ class TaskListView(ListAPIView):
     # fuzzy search
     search_fields = [
         "room_number", "task_name", "issues_type",
-        "description",
+        "description","computer_id", "monitor_id", "ups_id"
     ]
 
     # ordering

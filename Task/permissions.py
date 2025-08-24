@@ -10,9 +10,7 @@ class IsItStuff(permissions.BasePermission):
         user = request.user
         if not user or not user.is_authenticated:
             return False
-        
-        # Check if the user is a superuser
-        if user.user_type == 'ItStaff':
-            return True
 
+        if user.is_superuser or user.user_type == 'ItStaff':
+            return True
 
