@@ -70,28 +70,21 @@ class DashboardTaskListView(ListAPIView):
 
 
 class TaskListView(ListAPIView):
-    """
-    Logged-in user → only their own tasks.
-    Supports filter (status, issues_type), search, ordering, pagination (if enabled).
-    """
+
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    # exact filters 
+    
     filterset_fields = ["status", "issues_type"]
 
-    # fuzzy search
     search_fields = [
         "room_number", "task_name", "issues_type",
         "description","computer_id", "monitor_id", "ups_id"
     ]
 
-    # ordering
     ordering_fields = ["created_at", "updated_at", "room_number", "task_name"]
     ordering = ["-created_at"]
-
-
-        
+     
 
 class PendingTaskListView(ListAPIView):
     serializer_class = TaskSerializer
@@ -212,61 +205,7 @@ class TaskUpdateStatusView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-
-class TaskDashboardView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = TaskSerializer
     
-    def get_queryset(self):
-        queryset = Task.objects.all()
-
-        # filter by status, issues_type, room number and user
-        status_param = self.request.query_params.get('status')
-        if status_param:
-            queryset = queryset.filter(status=status_param)
-
-      
-        issues_type = self.request.query_params.get('issues_type')
-        if issues_type:
-            queryset = queryset.filter(issues_type=issues_type)
-
-        
-        room_number = self.request.query_params.get('room_number')
-        if room_number:
-            queryset = queryset.filter(room_number__icontains=room_number)
-
-        
-        user_type = self.request.query_params.get('user_type')
-        if user_type:
-            queryset = queryset.filter(user__user_type=user_type)
-
-        
-        search = self.request.query_params.get('search')
-        if search:
-            queryset = queryset.filter(
-                Q(task_name__icontains=search) |
-                Q(room_number__icontains=search) | 
-                Q(issues__icontains=search)
-            )
-
-        return queryset
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-
-        pending_count = Task.objects.filter(status='pending').count()
-        resolved_count = Task.objects.filter(status='resolved').count()
-
-        return Response({
-            'pending_count': pending_count,
-            'resolved_count': resolved_count,
-            'tasks': serializer.data
-        })
-
-    
-    
-
 class ContactUsView(APIView):
     permission_classes = []  # Allow unauthenticated users
 
