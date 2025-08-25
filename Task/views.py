@@ -6,12 +6,11 @@ from .serializers import TaskSerializer, CommentSerializer, ContactMessageSerial
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, Q
 from rest_framework import generics
-from .permissions import IsItStuff  # Assuming you have a custom permission class for IT staff
+from .permissions import IsItStuff  
 from rest_framework.filters import SearchFilter
 from django.core.mail import send_mail
 from rest_framework import status
 from Main import settings
-# views.py
 from rest_framework.generics import ListAPIView
 
 
@@ -57,25 +56,17 @@ class DashboardTaskListView(ListAPIView):
     serializer_class = TaskSerializer
     permission_classes = [IsItStuff]
 
-    # exact filters (?status=pending&issues_type=software&user=42)
     filterset_fields = ["status", "issues_type", "user"]
 
-    # fuzzy search (?search=room-301 or ?search=savrin)
+   
     search_fields = [
         "room_number", "task_name", "issues_type", "description",
         "user__username", "user__email",
     ]
 
-    # ordering (?ordering=created_at or ?ordering=-updated_at)
     ordering_fields = ["created_at", "updated_at", "room_number", "task_name"]
     ordering = ["-created_at"]
     
-    def get_queryset(self):
-        """
-        This view should return a list of all the purchases for
-        the user as determined by the username portion of the URL.
-        """
-        return Task.objects.filter(status='pending').count()
 
 
 class TaskListView(ListAPIView):
@@ -141,9 +132,6 @@ class TaskDetailView(APIView):
 
     
 class TaskCommentsListView(APIView):
-    """
-    GET: List all comments for a specific Task by task_id.
-    """
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, task_id):
@@ -152,9 +140,7 @@ class TaskCommentsListView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class CommentViewSet(APIView):
-    """
-    Handles CRUD operations for individual comments.
-    """
+
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self, pk, user):
@@ -164,17 +150,13 @@ class CommentViewSet(APIView):
         return comment
 
     def get(self, request, pk):
-        """
-        GET: Retrieve a specific comment by pk.
-        """
+        
         comment = get_object_or_404(Comment, pk=pk)
         serializer = CommentSerializer(comment)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, task_id):
-        """
-        POST: Create a new comment on a specific task.
-        """
+        
         task = get_object_or_404(Task, pk=task_id)
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid():
@@ -183,9 +165,7 @@ class CommentViewSet(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
-        """
-        PUT: Fully update a specific comment (only owner can update).
-        """
+        
         try:
             comment = self.get_object(pk, request.user)
         except PermissionError as e:
@@ -198,9 +178,7 @@ class CommentViewSet(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, pk):
-        """
-        PATCH: Partially update a specific comment (only owner can update).
-        """
+        
         try:
             comment = self.get_object(pk, request.user)
         except PermissionError as e:
@@ -213,9 +191,7 @@ class CommentViewSet(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        """
-        DELETE: Delete a specific comment (only owner can delete).
-        """
+        
         try:
             comment = self.get_object(pk, request.user)
         except PermissionError as e:
@@ -236,8 +212,6 @@ class TaskUpdateStatusView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    
-
 
 class TaskDashboardView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -281,7 +255,6 @@ class TaskDashboardView(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
-        # --- Dashboard Stats ---
         pending_count = Task.objects.filter(status='pending').count()
         resolved_count = Task.objects.filter(status='resolved').count()
 
