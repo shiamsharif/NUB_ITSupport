@@ -11,11 +11,14 @@ from .views import (
     TaskCommentsListView,
     ContactUsView,
     CommentViewSet,
-    
+    PendingTaskListView,
+    ResolvedTaskListView
 )
 
 urlpatterns = [
     path('dashboard-listView/', DashboardTaskListView.as_view(), name='dashboard-task-list'),
+    path('pending-tasks/', PendingTaskListView.as_view(), name='pending-task-list'),
+    path('resolved-tasks/', ResolvedTaskListView.as_view(), name='resolved-task-list'),
     
     path('create/', TaskCreateView.as_view(), name='task-create'),
     path('update/<int:pk>/', TaskUpdateView.as_view(), name='task-update'),

@@ -69,6 +69,13 @@ class DashboardTaskListView(ListAPIView):
     # ordering (?ordering=created_at or ?ordering=-updated_at)
     ordering_fields = ["created_at", "updated_at", "room_number", "task_name"]
     ordering = ["-created_at"]
+    
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases for
+        the user as determined by the username portion of the URL.
+        """
+        return Task.objects.filter(status='pending').count()
 
 
 class TaskListView(ListAPIView):
@@ -92,11 +99,36 @@ class TaskListView(ListAPIView):
     ordering_fields = ["created_at", "updated_at", "room_number", "task_name"]
     ordering = ["-created_at"]
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        # --- Dashboard Stats ---
+        pending_count = Task.objects.filter(status='pending').count()
+        resolved_count = Task.objects.filter(status='resolved').count()
+
+        return Response({
+            'pending_count': pending_count,
+            'resolved_count': resolved_count,
+            'tasks': serializer.data
+        })
+        
+
+class PendingTaskListView(ListAPIView):
+    serializer_class = TaskSerializer
+    permission_classes = [IsItStuff]
+
     def get_queryset(self):
-        return (
-            Task.objects.select_related("user")
-            .filter(user=self.request.user)
-        )
+        return Task.objects.filter(status='pending').order_by('-created_at')
+        
+
+class ResolvedTaskListView(ListAPIView):
+    serializer_class = TaskSerializer
+    permission_classes = [IsItStuff]
+
+    def get_queryset(self):
+        return Task.objects.filter(status='resolved').order_by('-updated_at')
+
 
 class TaskDeleteView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -202,7 +234,7 @@ class CommentViewSet(APIView):
             return Response({'detail': str(e)}, status=status.HTTP_403_FORBIDDEN)
 
         comment.delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response({'message': 'Comment deleted successfully'}, status=status.HTTP_200_OK)
 
 
 class TaskUpdateStatusView(APIView):

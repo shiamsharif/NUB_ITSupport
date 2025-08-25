@@ -28,6 +28,8 @@ CUSTOM_APPS = [
     
     'Account',
     'Task',
+    
+    "rest_framework_simplejwt.token_blacklist",
     ]
 
 # Application definition
@@ -182,6 +184,16 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER': timedelta(days=1),
     'SLIDING_TOKEN_LIFETIME_LATE_USER': timedelta(days=30),
 }
+
+# SIMPLE_JWT = {
+#         'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), # Example lifetime
+#         'REFRESH_TOKEN_LIFETIME': timedelta(days=1), # Example lifetime
+#         'ROTATE_REFRESH_TOKENS': True,
+#         'BLACKLIST_AFTER_ROTATION': True,    #"rest_framework_simplejwt.token_blacklist",
+#         'ALGORITHM': 'HS256',
+#         #'SIGNING_KEY': SECRET_KEY, # Use your Django SECRET_KEY
+#         'AUTH_HEADER_TYPES': ('Bearer',),
+# }
 
 
 CORS_ALLOW_ALL_ORIGINS = True
