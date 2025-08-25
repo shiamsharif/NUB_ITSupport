@@ -99,19 +99,7 @@ class TaskListView(ListAPIView):
     ordering_fields = ["created_at", "updated_at", "room_number", "task_name"]
     ordering = ["-created_at"]
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
 
-        # --- Dashboard Stats ---
-        pending_count = Task.objects.filter(status='pending').count()
-        resolved_count = Task.objects.filter(status='resolved').count()
-
-        return Response({
-            'pending_count': pending_count,
-            'resolved_count': resolved_count,
-            'tasks': serializer.data
-        })
         
 
 class PendingTaskListView(ListAPIView):
