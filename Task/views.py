@@ -84,6 +84,13 @@ class TaskListView(ListAPIView):
 
     ordering_fields = ["created_at", "updated_at", "room_number", "task_name"]
     ordering = ["-created_at"]
+    
+    def get_queryset(self):
+        return (
+            Task.objects.select_related("user")
+            .filter(user=self.request.user)
+        )
+
      
 
 class PendingTaskListView(ListAPIView):

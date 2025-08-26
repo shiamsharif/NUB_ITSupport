@@ -17,7 +17,7 @@ class Task(models.Model):
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tasks')
     
-    room_number = models.CharField(max_length=20)
+    room_number = models.CharField(max_length=200)
     computer_id = models.CharField(max_length=100, blank=True, null=True)
     monitor_id = models.CharField(max_length=100, blank=True, null=True)
     ups_id = models.CharField(max_length=100, blank=True, null=True)
