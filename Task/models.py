@@ -14,6 +14,14 @@ class Task(models.Model):
         ('in_progress', 'In Progress'),
         ('resolved', 'Resolved'),
     ]
+    
+    PRIORITY_CHOICES = [
+        ('none', 'None'),
+        ('low', 'Low'),
+        ('normal', 'Normal'),
+        ('high', 'High'),
+        ('emergency', 'Emergency'),
+    ]
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tasks')
     
@@ -31,12 +39,18 @@ class Task(models.Model):
         choices=STATUS_CHOICES,
         default='pending'
     )
+    
+    priority = models.CharField(
+        max_length=20,
+        choices=PRIORITY_CHOICES,
+        default='none'
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Task({self.room_number}) - {self.issues_type} - {self.status}"
+        return f"Task({self.room_number}) - {self.issues_type} - {self.status} - {self.priority}"
     
     
 class Comment(models.Model):

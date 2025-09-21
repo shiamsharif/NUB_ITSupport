@@ -75,14 +75,14 @@ class TaskListView(ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     
-    filterset_fields = ["status", "issues_type"]
+    filterset_fields = ["status", "issues_type", "priority"]
 
     search_fields = [
         "room_number", "task_name", "issues_type",
         "description","computer_id", "monitor_id", "ups_id"
     ]
 
-    ordering_fields = ["created_at", "updated_at", "room_number", "task_name"]
+    ordering_fields = ["created_at", "updated_at", "room_number", "task_name", "priority"]
     ordering = ["-created_at"]
     
     def get_queryset(self):
